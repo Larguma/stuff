@@ -21,3 +21,13 @@ if [ "$TAG" != "latest" ]; then
 fi
 
 echo "Done!"
+
+if [ "$TAG" == "latest" ]; then
+    echo "Skipping git tagging for 'latest' tag."
+    exit 0
+fi
+git tag -a $TAG -m "Release $TAG"
+git push --follow-tags
+
+echo "Done!"
+exit 1
