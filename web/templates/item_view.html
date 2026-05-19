@@ -1,0 +1,58 @@
+{{ define "title" }}{{ .Item.Name }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<div class="page-head">
+	<div>
+		<h1>{{ .Item.Name }}</h1>
+		<p class="muted">{{ t .Lang "label.qty" }} {{ .Item.Quantity }}</p>
+	</div>
+	<div class="actions">
+		<a class="btn" href="/items/{{ .Item.ID }}/edit">{{ t .Lang "button.edit" }}</a>
+		<a class="btn ghost" href="/">{{ t .Lang "button.back" }}</a>
+		<form method="post" action="/items/{{ .Item.ID }}/delete" data-confirm="{{ t .Lang `confirm.delete_item` }}">
+			<button class="btn danger" type="submit">{{ t .Lang "button.delete" }}</button>
+		</form>
+	</div>
+</div>
+
+<section class="card">
+	<div class="meta-grid">
+		<div>
+			<span class="label">{{ t .Lang "label.location" }}</span>
+			<span>{{ if .Item.LocationID }}{{ .Item.Location.Name }}{{ else }}{{ t .Lang "item.not_set" }}{{ end }}</span>
+		</div>
+		<div>
+			<span class="label">{{ t .Lang "field.link" }}</span>
+			<span>
+				{{ if .Item.Link }}
+					<a href="{{ .Item.Link }}" target="_blank" rel="noopener">{{ t .Lang "item.open_link" }}</a>
+				{{ else }}
+					{{ t .Lang "item.none" }}
+				{{ end }}
+			</span>
+		</div>
+	</div>
+	{{ if .Item.Notes }}
+		<p class="notes">{{ .Item.Notes }}</p>
+	{{ else }}
+		<p class="muted">{{ t .Lang "item.no_notes" }}</p>
+	{{ end }}
+	{{ if .Item.Tags }}
+		<div class="tags">
+			{{ range .Item.Tags }}
+				<span class="tag">{{ .Name }}</span>
+			{{ end }}
+		</div>
+	{{ end }}
+</section>
+
+{{ if gt (len .Item.Images) 0 }}
+<section class="image-grid">
+	{{ range .Item.Images }}
+		<figure class="image-card">
+			<img src="/uploads/{{ .Path }}" alt="{{ .OriginalName }}">
+			<figcaption>{{ .OriginalName }}</figcaption>
+		</figure>
+	{{ end }}
+</section>
+{{ end }}
+{{ end }}

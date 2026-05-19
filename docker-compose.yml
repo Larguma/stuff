@@ -1,0 +1,17 @@
+services:
+  stuff:
+    image: larguma/stuff:${APP_TAG}
+    container_name: stuff
+    restart: unless-stopped
+    environment:
+      TZ: ${TZ}
+      APP_ADDR: :8080
+      APP_DB_PATH: /app/data/app.db
+      APP_UPLOAD_DIR: /app/data/uploads
+      APP_SESSION_SECRET_FILE: /app/data/session_secret
+      APP_SESSION_SECRET: ${APP_SESSION_SECRET}
+      GIN_MODE: release
+    volumes:
+      - ${DATA_PATH}:/app/data
+    ports:
+      - "${APP_PORT}:8080"

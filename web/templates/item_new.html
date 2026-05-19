@@ -1,0 +1,52 @@
+{{ define "title" }}{{ t .Lang "title.item_add" }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<section class="card">
+	<h1>{{ t .Lang "title.item_add" }}</h1>
+	<form class="form" method="post" action="/items" enctype="multipart/form-data">
+		<div class="grid-two">
+			<label>
+				{{ t .Lang "field.name" }}
+				<input type="text" name="name" required>
+			</label>
+			<label>
+				{{ t .Lang "field.quantity" }}
+				<input type="number" name="quantity" min="0" placeholder="1">
+			</label>
+		</div>
+		<label>
+			{{ t .Lang "field.location" }}
+			<input type="text" name="location" class="location-input" list="location-options" placeholder="{{ t .Lang "placeholder.location" }}">
+		</label>
+		<label>
+			{{ t .Lang "field.tags" }}
+			<input type="text" name="tags" class="tag-input" list="tag-options" placeholder="{{ t .Lang "placeholder.tags" }}">
+		</label>
+		<label>
+			{{ t .Lang "field.link" }}
+			<input type="url" name="link" placeholder="https://">
+		</label>
+		<label>
+			{{ t .Lang "field.notes" }}
+			<textarea name="notes" rows="4" placeholder="{{ t .Lang "placeholder.notes" }}"></textarea>
+		</label>
+		<label>
+			{{ t .Lang "field.images" }}
+			<input type="file" name="images" multiple accept="image/*" capture="environment">
+		</label>
+		<div class="actions">
+			<button class="btn" type="submit">{{ t .Lang "button.save_item" }}</button>
+			<a class="btn ghost" href="/">{{ t .Lang "button.cancel" }}</a>
+		</div>
+		<datalist id="location-options">
+			{{ range .Locations }}
+				<option value="{{ .Name }}"></option>
+			{{ end }}
+		</datalist>
+		<datalist id="tag-options">
+			{{ range .Tags }}
+				<option value="{{ .Name }}"></option>
+			{{ end }}
+		</datalist>
+	</form>
+</section>
+{{ end }}

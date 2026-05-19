@@ -1,0 +1,84 @@
+{{ define "title" }}{{ t .Lang "title.houses" }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<div class="page-head">
+	<div>
+		<h1>{{ t .Lang "houses.heading" }}</h1>
+		<p class="muted">{{ t .Lang "houses.subheading" }}</p>
+	</div>
+</div>
+
+<section class="grid-two">
+	<div class="card">
+		<h2>{{ t .Lang "houses.your_houses" }}</h2>
+		{{ if .Houses }}
+			<ul class="clean-list">
+				{{ range .Houses }}
+					<li class="list-row">
+						<span>{{ .Name }}</span>
+						<form method="post" action="/houses/select">
+							<input type="hidden" name="house_id" value="{{ .ID }}">
+							<button class="btn ghost" type="submit">{{ t $.Lang "button.switch" }}</button>
+						</form>
+					</li>
+				{{ end }}
+			</ul>
+		{{ else }}
+			<p class="muted">{{ t .Lang "houses.no_houses" }}</p>
+		{{ end }}
+	</div>
+	<div class="card">
+		<h2>{{ t .Lang "houses.create_heading" }}</h2>
+		<form class="form" method="post" action="/houses">
+			<label>
+				{{ t .Lang "label.house_name" }}
+				<input type="text" name="name" required>
+			</label>
+			<button class="btn" type="submit">{{ t .Lang "button.create_house" }}</button>
+		</form>
+	</div>
+</section>
+
+{{ if .CurrentHouse }}
+<section class="grid-two">
+	<div class="card">
+		<h2>{{ t .Lang "houses.members_of" }} {{ .CurrentHouse.Name }}</h2>
+		{{ if .Members }}
+			<ul class="clean-list">
+				{{ range .Members }}
+					<li>@{{ .Username }}</li>
+				{{ end }}
+			</ul>
+		{{ else }}
+			<p class="muted">{{ t .Lang "houses.no_members" }}</p>
+		{{ end }}
+		<form class="form" method="post" action="/members">
+			<label>
+				{{ t .Lang "houses.add_member_label" }}
+				<input type="text" name="username" required>
+			</label>
+			<button class="btn ghost" type="submit">{{ t .Lang "button.add_member" }}</button>
+		</form>
+	</div>
+	<div class="card">
+		<h2>{{ t .Lang "houses.invites_heading" }}</h2>
+		<form method="post" action="/invites">
+			<button class="btn" type="submit">{{ t .Lang "button.create_invite" }}</button>
+		</form>
+		{{ if .Invites }}
+			<ul class="clean-list">
+				{{ range .Invites }}
+					<li class="invite-row">
+						<div>
+							<span class="pill">{{ .Code }}</span>
+							<input class="invite-link" type="text" readonly value="{{ $.BaseURL }}/invite/{{ .Code }}">
+						</div>
+					</li>
+				{{ end }}
+			</ul>
+		{{ else }}
+			<p class="muted">{{ t .Lang "houses.no_invites" }}</p>
+		{{ end }}
+	</div>
+</section>
+{{ end }}
+{{ end }}

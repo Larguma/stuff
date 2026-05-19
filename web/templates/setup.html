@@ -1,0 +1,22 @@
+{{ define "title" }}{{ t .Lang "title.setup" }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<section class="card narrow">
+	<h1>{{ t .Lang "setup.heading" }}</h1>
+	<p class="muted">{{ t .Lang "setup.subheading" }}</p>
+	<form class="form" method="post" action="/setup">
+		<label>
+			{{ t .Lang "label.house_name" }}
+			<input type="text" name="house" required>
+		</label>
+		<label>
+			{{ t .Lang "label.username" }}
+			<input type="text" name="username" autocomplete="username" required>
+		</label>
+		<label>
+			{{ t .Lang "label.password" }}
+			<input type="password" name="password" autocomplete="new-password" required>
+		</label>
+		<button class="btn" type="submit">{{ t .Lang "button.create_house" }}</button>
+	</form>
+</section>
+{{ end }}

@@ -1,0 +1,64 @@
+{{ define "title" }}{{ t .Lang "title.search" }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<div class="page-head">
+	<div>
+		<h1>{{ t .Lang "search.heading" }}</h1>
+		<p class="muted">{{ t .Lang "search.subheading" }}</p>
+	</div>
+</div>
+
+<form class="search-bar" method="get" action="/search">
+	<input type="text" name="q" value="{{ .Query }}" placeholder="{{ t .Lang "search.placeholder" }}">
+	<button class="btn" type="submit">{{ t .Lang "button.search" }}</button>
+</form>
+
+{{ if .Query }}
+<section class="card">
+	<h2>{{ t .Lang "label.items" }}</h2>
+	{{ if .Items }}
+		<div class="list">
+			{{ range .Items }}
+				<a class="list-item" href="/items/{{ .ID }}">
+					<div>
+						<strong>{{ .Name }}</strong>
+						<span class="muted">{{ t $.Lang "label.qty" }} {{ .Quantity }}</span>
+					</div>
+					{{ if .LocationID }}
+						<span class="pill">{{ .Location.Name }}</span>
+					{{ end }}
+				</a>
+			{{ end }}
+		</div>
+	{{ else }}
+		<p class="muted">{{ t .Lang "search.no_items" }}</p>
+	{{ end }}
+</section>
+
+<section class="grid-two">
+	<div class="card">
+		<h2>{{ t .Lang "label.tags" }}</h2>
+		{{ if .Tags }}
+			<div class="tags">
+				{{ range .Tags }}
+					<span class="tag">{{ .Name }}</span>
+				{{ end }}
+			</div>
+		{{ else }}
+			<p class="muted">{{ t .Lang "search.no_tags" }}</p>
+		{{ end }}
+	</div>
+	<div class="card">
+		<h2>{{ t .Lang "label.locations" }}</h2>
+		{{ if .Locations }}
+			<ul class="clean-list">
+				{{ range .Locations }}
+					<li>{{ .Name }}</li>
+				{{ end }}
+			</ul>
+		{{ else }}
+			<p class="muted">{{ t .Lang "search.no_locations" }}</p>
+		{{ end }}
+	</div>
+</section>
+{{ end }}
+{{ end }}

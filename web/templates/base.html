@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="{{ .Lang }}">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>{{ block "title" . }}{{ t .Lang "app.name" }}{{ end }}</title>
+	<link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+	<div class="bg-orbit"></div>
+	<header class="topbar">
+		<div class="brand">
+			<a class="logo" href="/">{{ t .Lang "app.name" }}</a>
+			{{ if .House }}
+				<span class="house-pill">{{ .House.Name }}</span>
+			{{ else }}
+				<span class="house-pill muted">{{ t .Lang "nav.no_house" }}</span>
+			{{ end }}
+		</div>
+		<nav class="nav" data-mobile-nav>
+			<button class="nav-toggle" type="button" data-nav-toggle aria-expanded="false" aria-controls="primary-nav" aria-label="{{ t .Lang "nav.menu" }}">
+				<span></span>
+				<span></span>
+				<span></span>
+			</button>
+			<div class="nav-menu" id="primary-nav" data-nav-menu>
+				{{ if .User }}
+					<a href="/">{{ t .Lang "nav.items" }}</a>
+					<a href="/search">{{ t .Lang "nav.search" }}</a>
+					<a href="/houses">{{ t .Lang "nav.houses" }}</a>
+					<a href="/logout">{{ t .Lang "nav.logout" }}</a>
+				{{ else }}
+					<a href="/login">{{ t .Lang "nav.login" }}</a>
+				{{ end }}
+				<form class="lang-picker" method="get">
+					<label>
+						<select name="lang" onchange="this.form.submit()">
+							{{ range .LangOptions }}
+								<option value="{{ .Code }}" {{ if eq $.Lang .Code }}selected{{ end }}>{{ .Label }}</option>
+							{{ end }}
+						</select>
+					</label>
+				</form>
+			</div>
+		</nav>
+	</header>
+	<main class="container">
+		{{ if .Flash }}
+			<div class="flash">{{ .Flash }}</div>
+		{{ end }}
+		{{ block "content" . }}{{ end }}
+	</main>
+	<div class="confirm-modal" data-confirm-modal hidden aria-hidden="true">
+		<div class="confirm-modal-backdrop" data-confirm-close></div>
+		<div class="confirm-modal-panel" role="dialog" aria-modal="true" aria-labelledby="confirm-modal-title" aria-describedby="confirm-modal-message">
+			<h2 id="confirm-modal-title">{{ t .Lang "confirm.title" }}</h2>
+			<p id="confirm-modal-message" data-confirm-message></p>
+			<div class="confirm-modal-actions">
+				<button class="btn ghost" type="button" data-confirm-cancel>{{ t .Lang "button.cancel" }}</button>
+				<button class="btn danger" type="button" data-confirm-accept>{{ t .Lang "button.delete" }}</button>
+			</div>
+		</div>
+	</div>
+	<script src="/static/tag-autocomplete.js" defer></script>
+	<script src="/static/nav-menu.js" defer></script>
+	<script src="/static/confirm-dialog.js" defer></script>
+</body>
+</html>

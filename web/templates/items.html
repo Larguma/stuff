@@ -1,0 +1,98 @@
+{{ define "title" }}{{ t .Lang "title.items" }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<div class="page-head">
+	<div>
+		<h1>{{ t .Lang "items.heading" }}</h1>
+		<p class="muted">{{ t .Lang "items.subheading" }}</p>
+	</div>
+	<div class="actions">
+		<a class="btn" href="/items/new">{{ t .Lang "button.add_item" }}</a>
+		<a class="btn ghost" href="/search">{{ t .Lang "button.search" }}</a>
+		<div class="view-toggle">
+			<a class="btn ghost {{ if eq .ViewMode "list" }}active{{ end }}" href="/?view=list{{ .LocationQuery }}">{{ t .Lang "items.view_list" }}</a>
+			<a class="btn ghost {{ if eq .ViewMode "cards" }}active{{ end }}" href="/?view=cards{{ .LocationQuery }}">{{ t .Lang "items.view_cards" }}</a>
+		</div>
+	</div>
+</div>
+
+<form class="filter-bar" method="get" action="/">
+	<input type="hidden" name="view" value="{{ .ViewMode }}">
+	<label>
+		{{ t .Lang "label.location" }}
+		<select name="location_id" onchange="this.form.submit()">
+			<option value="" {{ if eq .SelectedLocationID "" }}selected{{ end }}>{{ t .Lang "items.filter_all" }}</option>
+			<option value="0" {{ if eq .SelectedLocationID "0" }}selected{{ end }}>{{ t .Lang "items.filter_unassigned" }}</option>
+			{{ range .Locations }}
+				<option value="{{ .ID }}" {{ if eq $.SelectedLocationID (printf "%d" .ID) }}selected{{ end }}>{{ .Name }}</option>
+			{{ end }}
+		</select>
+	</label>
+</form>
+
+{{ if .Items }}
+{{ if eq .ViewMode "list" }}
+<div class="list item-list">
+	{{ range .Items }}
+	<a class="list-item item-row" href="/items/{{ .ID }}">
+		<div class="item-row-main">
+			<div class="item-row-title">
+				<strong>{{ .Name }}</strong>
+				<span class="pill">{{ t $.Lang "label.qty" }} {{ .Quantity }}</span>
+			</div>
+			{{ if .LocationID }}
+				<div class="meta">{{ t $.Lang "label.location" }}: <strong>{{ .Location.Name }}</strong></div>
+			{{ end }}
+			{{ if .Tags }}
+				<div class="tags">
+					{{ range .Tags }}
+						<span class="tag">{{ .Name }}</span>
+					{{ end }}
+				</div>
+			{{ end }}
+		</div>
+		{{ if gt (len .Images) 0 }}
+			{{ $img := index .Images 0 }}
+			<img class="thumb-sm" src="/uploads/{{ $img.Path }}" alt="{{ .Name }}">
+		{{ end }}
+	</a>
+	{{ end }}
+</div>
+{{ else }}
+<div class="grid">
+	{{ range .Items }}
+	<a class="card item-card" href="/items/{{ .ID }}">
+		<div class="card-head">
+			<h3>{{ .Name }}</h3>
+			<span class="pill">{{ t $.Lang "label.qty" }} {{ .Quantity }}</span>
+		</div>
+		{{ if .LocationID }}
+			<div class="meta">{{ t $.Lang "label.location" }}: <strong>{{ .Location.Name }}</strong></div>
+		{{ end }}
+		{{ if .Notes }}
+			<p class="notes">{{ .Notes }}</p>
+		{{ end }}
+		{{ if .Tags }}
+			<div class="tags">
+				{{ range .Tags }}
+					<span class="tag">{{ .Name }}</span>
+				{{ end }}
+			</div>
+		{{ end }}
+		{{ if gt (len .Images) 0 }}
+			{{ $img := index .Images 0 }}
+			<div class="thumb">
+				<img src="/uploads/{{ $img.Path }}" alt="{{ .Name }}">
+			</div>
+		{{ end }}
+	</a>
+	{{ end }}
+</div>
+{{ end }}
+{{ else }}
+<div class="card empty">
+	<h3>{{ t .Lang "items.no_items_title" }}</h3>
+	<p class="muted">{{ t .Lang "items.no_items_body" }}</p>
+	<a class="btn" href="/items/new">{{ t .Lang "button.add_first_item" }}</a>
+</div>
+{{ end }}
+{{ end }}

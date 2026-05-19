@@ -1,0 +1,30 @@
+{{ define "title" }}{{ t .Lang "title.invite" }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<section class="card narrow">
+	<h1>{{ t .Lang "invite.heading" }}</h1>
+	{{ if .Error }}
+		<p class="muted">{{ .Error }}</p>
+		<a class="btn ghost" href="/login">{{ t .Lang "invite.back_login" }}</a>
+	{{ else }}
+		<p class="muted">{{ t .Lang "invite.joining" }} <strong>{{ .House.Name }}</strong>.</p>
+		{{ if .LoggedIn }}
+			<form class="form" method="post" action="/invite/{{ .Invite.Code }}">
+				<button class="btn" type="submit">{{ t .Lang "button.join_house" }}</button>
+			</form>
+		{{ else }}
+			<form class="form" method="post" action="/invite/{{ .Invite.Code }}">
+				<label>
+					{{ t .Lang "label.username" }}
+					<input type="text" name="username" required>
+				</label>
+				<label>
+					{{ t .Lang "label.password" }}
+					<input type="password" name="password" required>
+				</label>
+				<button class="btn" type="submit">{{ t .Lang "button.create_join" }}</button>
+			</form>
+			<p class="muted">{{ t .Lang "invite.already_account" }} <a href="/login">{{ t .Lang "button.login" }}</a> {{ t .Lang "invite.login_first" }}</p>
+		{{ end }}
+	{{ end }}
+</section>
+{{ end }}

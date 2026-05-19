@@ -1,0 +1,75 @@
+{{ define "title" }}{{ t .Lang "title.item_edit" }} {{ .Item.Name }} - {{ t .Lang "app.name" }}{{ end }}
+{{ define "content" }}
+<section class="card">
+	<h1>{{ t .Lang "title.item_edit" }}</h1>
+	<form class="form" method="post" action="/items/{{ .Item.ID }}" enctype="multipart/form-data">
+		<div class="grid-two">
+			<label>
+				{{ t .Lang "field.name" }}
+				<input type="text" name="name" value="{{ .Item.Name }}" required>
+			</label>
+			<label>
+				{{ t .Lang "field.quantity" }}
+				<input type="number" name="quantity" min="0" value="{{ .Item.Quantity }}">
+			</label>
+		</div>
+		<label>
+			{{ t .Lang "field.location" }}
+			<input type="text" name="location" class="location-input" value="{{ .LocationName }}" list="location-options" placeholder="{{ t .Lang "placeholder.location" }}">
+		</label>
+		<label>
+			{{ t .Lang "field.tags" }}
+			<input type="text" name="tags" class="tag-input" value="{{ .TagList }}" list="tag-options" placeholder="{{ t .Lang "placeholder.tags" }}">
+		</label>
+		<label>
+			{{ t .Lang "field.link" }}
+			<input type="url" name="link" value="{{ .Item.Link }}" placeholder="https://">
+		</label>
+		<label>
+			{{ t .Lang "field.notes" }}
+			<textarea name="notes" rows="4" placeholder="{{ t .Lang "placeholder.notes" }}">{{ .Item.Notes }}</textarea>
+		</label>
+
+		{{ if gt (len .Item.Images) 0 }}
+		<div>
+			<h3>{{ t .Lang "item.images_current" }}</h3>
+			<section class="image-grid">
+				{{ range .Item.Images }}
+					<figure class="image-card">
+						<img src="/uploads/{{ .Path }}" alt="{{ .OriginalName }}">
+						<figcaption>
+							<div class="image-caption">
+								<span>{{ .OriginalName }}</span>
+								<label class="image-remove">
+									<input type="checkbox" name="delete_images" value="{{ .ID }}">
+									{{ t $.Lang "item.remove" }}
+								</label>
+							</div>
+						</figcaption>
+					</figure>
+				{{ end }}
+			</section>
+		</div>
+		{{ end }}
+
+		<label>
+			{{ t .Lang "field.add_images" }}
+			<input type="file" name="images" multiple accept="image/*" capture="environment">
+		</label>
+		<div class="actions">
+			<button class="btn" type="submit">{{ t .Lang "button.save_changes" }}</button>
+			<a class="btn ghost" href="/items/{{ .Item.ID }}">{{ t .Lang "button.cancel" }}</a>
+		</div>
+		<datalist id="location-options">
+			{{ range .Locations }}
+				<option value="{{ .Name }}"></option>
+			{{ end }}
+		</datalist>
+		<datalist id="tag-options">
+			{{ range .Tags }}
+				<option value="{{ .Name }}"></option>
+			{{ end }}
+		</datalist>
+	</form>
+</section>
+{{ end }}
