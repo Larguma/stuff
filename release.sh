@@ -2,7 +2,7 @@
 
 set -e
 
-echo -n "Did you update the version? (./release.sh v1.0.0)"
+echo -n "Did you update the version? (./release.sh vX.X.X)"
 read
 
 TAG=${1:-latest}

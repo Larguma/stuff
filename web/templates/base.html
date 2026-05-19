@@ -3,7 +3,10 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="theme-color" content="#1e1e2e">
 	<title>{{ block "title" . }}{{ t .Lang "app.name" }}{{ end }}</title>
+	<link rel="icon" type="image/png" href="/static/icons/icon-192.png">
+	<link rel="manifest" href="/manifest.json">
 	<link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
@@ -64,5 +67,12 @@
 	<script src="/static/tag-autocomplete.js" defer></script>
 	<script src="/static/nav-menu.js" defer></script>
 	<script src="/static/confirm-dialog.js" defer></script>
+	<script>
+		if ('serviceWorker' in navigator) {
+			window.addEventListener('load', () => {
+				navigator.serviceWorker.register('/sw.js');
+			});
+		}
+	</script>
 </body>
 </html>

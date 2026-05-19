@@ -21,6 +21,8 @@ func NewRouter(db *gorm.DB, cfg config.Config, index *search.Index) *gin.Engine 
 
 	router.HTMLRender = newRenderer()
 	router.Static("/static", "web/static")
+	router.StaticFile("/manifest.json", "web/static/manifest.json")
+	router.StaticFile("/sw.js", "web/static/sw.js")
 	router.Static("/uploads", cfg.UploadDir)
 
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
