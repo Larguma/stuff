@@ -12,6 +12,7 @@ import (
 
 	"github.com/Larguma/stuff/internal/models"
 	"github.com/Larguma/stuff/internal/utils"
+	"github.com/disintegration/imaging"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -384,6 +385,12 @@ func (h *Handlers) postEditItem(c *gin.Context) {
 			if err := os.Remove(path); err != nil && !errors.Is(err, os.ErrNotExist) {
 				log.Printf("failed to remove image %s: %v", path, err)
 			}
+			if image.ThumbnailPath != "" {
+				thumbPath := filepath.Join(h.cfg.UploadDir, filepath.FromSlash(image.ThumbnailPath))
+				if err := os.Remove(thumbPath); err != nil && !errors.Is(err, os.ErrNotExist) {
+					log.Printf("failed to remove thumbnail %s: %v", thumbPath, err)
+				}
+			}
 		}
 	}
 
@@ -451,6 +458,12 @@ func (h *Handlers) postDeleteItem(c *gin.Context) {
 		path := filepath.Join(h.cfg.UploadDir, filepath.FromSlash(image.Path))
 		if err := os.Remove(path); err != nil && !errors.Is(err, os.ErrNotExist) {
 			log.Printf("failed to remove image %s: %v", path, err)
+		}
+		if image.ThumbnailPath != "" {
+			thumbPath := filepath.Join(h.cfg.UploadDir, filepath.FromSlash(image.ThumbnailPath))
+			if err := os.Remove(thumbPath); err != nil && !errors.Is(err, os.ErrNotExist) {
+				log.Printf("failed to remove thumbnail %s: %v", thumbPath, err)
+			}
 		}
 	}
 
@@ -531,22 +544,50 @@ func (h *Handlers) saveUploadedImages(c *gin.Context, itemID uint) ([]models.Ite
 
 	images := make([]models.ItemImage, 0, len(files))
 	for _, file := range files {
-		ext := filepath.Ext(file.Filename)
-		filename, err := randomCode(12)
+		code, err := randomCode(12)
 		if err != nil {
 			return nil, err
 		}
-		filename = filename + ext
-		relPath := filepath.ToSlash(filepath.Join(fmt.Sprintf("item_%d", itemID), filename))
-		fullPath := filepath.Join(h.cfg.UploadDir, relPath)
 
-		if err := c.SaveUploadedFile(file, fullPath); err != nil {
+		filename := code + ".jpg"
+		thumbName := code + "_thumb.jpg"
+
+		relPath := filepath.ToSlash(filepath.Join(fmt.Sprintf("item_%d", itemID), filename))
+		relThumbPath := filepath.ToSlash(filepath.Join(fmt.Sprintf("item_%d", itemID), thumbName))
+
+		fullPath := filepath.Join(h.cfg.UploadDir, relPath)
+		fullThumbPath := filepath.Join(h.cfg.UploadDir, relThumbPath)
+
+		src, err := file.Open()
+		if err != nil {
 			return nil, err
 		}
+		defer src.Close()
+
+		img, err := imaging.Decode(src, imaging.AutoOrientation(true))
+		if err != nil {
+			return nil, err
+		}
+
+		mainImg := img
+		if img.Bounds().Dx() > 1200 || img.Bounds().Dy() > 1200 {
+			mainImg = imaging.Fit(img, 1200, 1200, imaging.Lanczos)
+		}
+
+		thumbImg := imaging.Fit(img, 400, 400, imaging.Lanczos)
+
+		if err := imaging.Save(mainImg, fullPath, imaging.JPEGQuality(85)); err != nil {
+			return nil, err
+		}
+		if err := imaging.Save(thumbImg, fullThumbPath, imaging.JPEGQuality(80)); err != nil {
+			return nil, err
+		}
+
 		images = append(images, models.ItemImage{
-			ItemID:       itemID,
-			Path:         relPath,
-			OriginalName: file.Filename,
+			ItemID:        itemID,
+			Path:          relPath,
+			ThumbnailPath: relThumbPath,
+			OriginalName:  file.Filename,
 		})
 	}
 

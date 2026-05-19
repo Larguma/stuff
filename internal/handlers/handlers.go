@@ -28,6 +28,7 @@ func (h *Handlers) RegisterRoutes(router *gin.Engine) {
 
 	authenticated := router.Group("/")
 	authenticated.Use(h.authRequired())
+	authenticated.Use(NoCacheMiddleware())
 	{
 		authenticated.GET("/", h.getItems)
 		authenticated.GET("/items/new", h.getNewItem)
@@ -42,5 +43,14 @@ func (h *Handlers) RegisterRoutes(router *gin.Engine) {
 		authenticated.POST("/houses/select", h.postSelectHouse)
 		authenticated.POST("/members", h.postAddMember)
 		authenticated.POST("/invites", h.postCreateInvite)
+	}
+}
+
+func NoCacheMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0")
+		c.Header("Pragma", "no-cache")
+		c.Header("Expires", "0")
+		c.Next()
 	}
 }

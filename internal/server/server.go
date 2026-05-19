@@ -20,10 +20,17 @@ func NewRouter(db *gorm.DB, cfg config.Config, index *search.Index) *gin.Engine 
 	router.MaxMultipartMemory = 32 << 20
 
 	router.HTMLRender = newRenderer()
-	router.Static("/static", "web/static")
+
+	static := router.Group("/static")
+	static.Use(cacheMiddleware("public, max-age=31536000")) // 1 year
+	static.Static("", "web/static")
+
 	router.StaticFile("/manifest.json", "web/static/manifest.json")
 	router.StaticFile("/sw.js", "web/static/sw.js")
-	router.Static("/uploads", cfg.UploadDir)
+
+	uploads := router.Group("/uploads")
+	uploads.Use(cacheMiddleware("public, max-age=86400")) // 1 day
+	uploads.Static("", cfg.UploadDir)
 
 	store := cookie.NewStore([]byte(cfg.SessionSecret))
 	store.Options(sessions.Options{
@@ -59,4 +66,11 @@ func newRenderer() multitemplate.Renderer {
 	renderer.AddFromFilesFuncs("invite", funcs, base, "web/templates/invite.html")
 
 	return renderer
+}
+
+func cacheMiddleware(cacheControl string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Header("Cache-Control", cacheControl)
+		c.Next()
+	}
 }

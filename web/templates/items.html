@@ -52,7 +52,7 @@
 		</div>
 		{{ if gt (len .Images) 0 }}
 			{{ $img := index .Images 0 }}
-			<img class="thumb-sm" src="/uploads/{{ $img.Path }}" alt="{{ .Name }}">
+			<img class="thumb-sm" src="/uploads/{{ if $img.ThumbnailPath }}{{ $img.ThumbnailPath }}{{ else }}{{ $img.Path }}{{ end }}" alt="{{ .Name }}">
 		{{ end }}
 	</a>
 	{{ end }}
@@ -81,7 +81,7 @@
 		{{ if gt (len .Images) 0 }}
 			{{ $img := index .Images 0 }}
 			<div class="thumb">
-				<img src="/uploads/{{ $img.Path }}" alt="{{ .Name }}">
+				<img src="/uploads/{{ if $img.ThumbnailPath }}{{ $img.ThumbnailPath }}{{ else }}{{ $img.Path }}{{ end }}" alt="{{ .Name }}">
 			</div>
 		{{ end }}
 	</a>

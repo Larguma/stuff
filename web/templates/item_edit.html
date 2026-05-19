@@ -36,7 +36,7 @@
 			<section class="image-grid">
 				{{ range .Item.Images }}
 					<figure class="image-card">
-						<img src="/uploads/{{ .Path }}" alt="{{ .OriginalName }}">
+						<img src="/uploads/{{ if .ThumbnailPath }}{{ .ThumbnailPath }}{{ else }}{{ .Path }}{{ end }}" alt="{{ .OriginalName }}">
 						<figcaption>
 							<div class="image-caption">
 								<span>{{ .OriginalName }}</span>

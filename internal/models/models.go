@@ -66,9 +66,10 @@ type Item struct {
 }
 
 type ItemImage struct {
-	ID           uint `gorm:"primaryKey"`
-	ItemID       uint `gorm:"index"`
-	Path         string
-	OriginalName string
-	CreatedAt    time.Time
+	ID            uint `gorm:"primaryKey"`
+	ItemID        uint `gorm:"index"`
+	Path          string
+	ThumbnailPath string
+	OriginalName  string
+	CreatedAt     time.Time
 }
